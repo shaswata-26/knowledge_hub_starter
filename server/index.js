@@ -18,7 +18,7 @@ const app = express();
 // }));
 
 app.use(cors({
-  origin: 'https://knowledge-hub-starter-frontend.onrender.com',
+  origin: 'https://knowledge-hub-starter-frontend.onrender.com/api',
   credentials: true
 }));
 
