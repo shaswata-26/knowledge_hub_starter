@@ -13,7 +13,7 @@ const app = express();
 
 // // Middleware
 app.use(cors({
-  origin: 'https://knowledge-hub-starter-frontend.onrender.com',
+  origin: 'https://knowledge-hub-starter-frontend.onrender.com/api',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true // if you're using cookies or auth headers
 }));
