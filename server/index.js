@@ -17,45 +17,11 @@ const app = express();
 //   credentials: true
 // }));
 
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (server-to-server, curl, health checks)
-    if (!origin) return callback(null, true);
-    
-    console.log('🌐 Origin requesting access:', origin);
-    
-    // List of allowed origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://knowledge-hub-starter-frontend.onrender.com',
-      'https://knowledge-hub-starter.onrender.com',
-      'https://knowledge-hub-backend.onrender.com'
-    ];
-    
-    // Check if origin is allowed
-    const isAllowed = allowedOrigins.some(allowedOrigin => 
-      origin === allowedOrigin || origin.endsWith('.render.com')
-    );
-    
-    if (isAllowed) {
-      console.log('✅ Allowed origin:', origin);
-      callback(null, true);
-    } else {
-      console.log('🚫 Blocked by CORS:', origin);
-      callback(new Error(`Not allowed by CORS. Allowed origins: ${allowedOrigins.join(', ')}`));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
-};
+app.use(cors({
+  origin: 'https://knowledge-hub-starter-frontend.onrender.com',
+  credentials: true
+}));
 
-// Apply CORS middleware
-app.use(cors(corsOptions));
-
-// Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
 
 // Add debug middleware to see all requests
 app.use((req, res, next) => {
