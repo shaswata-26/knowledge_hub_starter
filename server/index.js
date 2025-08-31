@@ -18,37 +18,21 @@ const app = express();
 // }));
 
 
-// Fix CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests)
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://knowledge-hub-starter-frontend.onrender.com',
-      'https://knowledge-hub-starter.onrender.com',
-      'https://knowledge-hub-backend.onrender.com'
-    ];
-    
-    // Allow any Render.com subdomain and localhost
-    if (allowedOrigins.includes(origin) || 
-        origin.endsWith('.render.com') || 
-        origin.includes('localhost')) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
+    const allowedOrigins = process.env.CORS_WHITELIST ? process.env.CORS_WHITELIST.split(',') : [];
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     }
+    return callback(null, true);
   },
-  credentials: true,
-  optionsSuccessStatus: 200
-};
+  credentials: true
+}));
 
-app.use(cors(corsOptions));
-
-// Handle preflight requests for all routes
-app.options('*', cors(corsOptions));
+// Error handling for CORS
 
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
