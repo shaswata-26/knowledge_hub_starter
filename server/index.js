@@ -12,46 +12,32 @@ connectDB();
 const app = express();
 
 // // Middleware
-// app.use(cors({
-//   origin: true, // Your Vite frontend URL
-//   credentials: true
-// }));
-
 app.use(cors({
-  origin: 'https://knowledge-hub-starter-frontend.onrender.com/api',
+  origin: true, // Your Vite frontend URL
   credentials: true
 }));
 
 
-// Add debug middleware to see all requests
+
+
+// Detailed request logging
 app.use((req, res, next) => {
-  console.log('📨 Request:', {
+  console.log('📨 Request Details:', {
+    timestamp: new Date().toISOString(),
     method: req.method,
     url: req.url,
     origin: req.headers.origin || 'no-origin',
-    headers: req.headers
+    'user-agent': req.headers['user-agent'] || 'unknown',
+    authorization: req.headers.authorization ? 'present' : 'missing'
   });
+  
+  // Log full headers for OPTIONS requests
+  if (req.method === 'OPTIONS') {
+    console.log('🛬 Preflight Headers:', req.headers);
+  }
+  
   next();
 });
-
-// Handle CORS errors gracefully
-app.use((err, req, res, next) => {
-  if (err.message.includes('CORS')) {
-    console.log('🛑 CORS Error:', err.message);
-    return res.status(403).json({
-      error: 'CORS policy violation',
-      message: err.message,
-      allowedOrigins: [
-        'http://localhost:5173',
-        'https://knowledge-hub-starter-frontend.onrender.com',
-        'https://knowledge-hub-starter.onrender.com',
-        '*.render.com'
-      ]
-    });
-  }
-  next(err);
-});
-
 app.use(express.json());
 
 
