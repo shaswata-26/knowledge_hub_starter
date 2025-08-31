@@ -11,6 +11,7 @@ const API = axios.create({
 // Add auth token to requests - This should be FIRST interceptor
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  console.log('Retrieved token:', token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

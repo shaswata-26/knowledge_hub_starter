@@ -10,12 +10,14 @@ dotenv.config();
 connectDB();
 
 const app = express();
+const allowedOrigins = [
+  "https://knowledge-hub-starter-frontend.onrender.com",
+  "http://localhost:5173", // add this for local dev if needed
+];
 
-// // Middleware
 app.use(cors({
-  origin: 'https://knowledge-hub-starter-frontend.onrender.com/api',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true // if you're using cookies or auth headers
+  origin: allowedOrigins,
+  credentials: true, // if using cookies/auth headers
 }));
 
 
