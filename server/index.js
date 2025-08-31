@@ -12,39 +12,13 @@ connectDB();
 const app = express();
 
 // // Middleware
-// app.use(cors({
-//   origin: true, // Your Vite frontend URL
-//   credentials: true
-// }));
+app.use(cors({
+  origin: true, // Your Vite frontend URL
+  credentials: true
+}));
 
 
 // Fix CORS configuration
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'https://knowledge-hub-starter-frontend.onrender.com'
-      
-    ];
-    
-    // Allow any Render.com subdomain and localhost
-    if (allowedOrigins.includes(origin) || 
-        origin.endsWith('.render.com') || 
-        origin.endsWith('localhost:5173')) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  optionsSuccessStatus: 200
-};
-
-app.use(cors(corsOptions));
 
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
