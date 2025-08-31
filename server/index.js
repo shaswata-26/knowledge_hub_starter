@@ -13,8 +13,9 @@ const app = express();
 
 // // Middleware
 app.use(cors({
-  origin: true, // Your Vite frontend URL
-  credentials: true
+  origin: 'https://knowledge-hub-starter-frontend.onrender.com',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true // if you're using cookies or auth headers
 }));
 
 
