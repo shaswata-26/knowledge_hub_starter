@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with correct baseURL
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
+  baseURL: import.meta.env.VITE_API_URL || 'https://knowledge-hub-starter.onrender.com/api'
 });
 
 // Set/remove authentication token
