@@ -18,6 +18,13 @@ app.use(cors({
   credentials: true
 }));
 
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    console.log('🚦 Final CORS Header Sent:', res.getHeader('Access-Control-Allow-Origin'));
+  });
+  next();
+});
+
 
 
 // Detailed request logging
