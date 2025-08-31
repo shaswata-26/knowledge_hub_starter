@@ -18,6 +18,7 @@ const app = express();
 // }));
 
 
+// Fix CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps, curl requests)
@@ -27,10 +28,13 @@ const corsOptions = {
       'http://localhost:5173',
       'https://knowledge-hub-starter.onrender.com',
       'https://knowledge-hub-frontend.onrender.com',
-      'https://knowledge-hub-starter.onrender.com' // Your frontend URL
+      'https://your-frontend-url.onrender.com' // Your actual frontend URL
     ];
     
-    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('render.com')) {
+    // Allow any Render.com subdomain and localhost
+    if (allowedOrigins.includes(origin) || 
+        origin.endsWith('.render.com') || 
+        origin.endsWith('localhost:5173')) {
       callback(null, true);
     } else {
       console.log('Blocked by CORS:', origin);

@@ -45,6 +45,52 @@ const { generateSummary, generateTags, semanticSearch, answerQuestionApi } = req
 // };
 
 // In getDocuments function - fix the search query
+// const getDocuments = async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1;
+//     const limit = parseInt(req.query.limit) || 10;
+//     const skip = (page - 1) * limit;
+    
+//     let query = {};
+    
+//     // Filter by tag if provided
+//     if (req.query.tag) {
+//       query.tags = { $in: [req.query.tag] };
+//     }
+    
+//     // Filter by search term if provided - FIXED
+//     if (req.query.search) {
+//       const searchRegex = { $regex: req.query.search, $options: 'i' }; // Use string directly
+      
+//       query.$or = [
+//         { title: searchRegex },
+//         { content: searchRegex },
+//         { tags: { $in: [req.query.search] } } // For tags, use $in with string
+//       ];
+//     }
+    
+//     const documents = await Document.find(query)
+//       .populate('createdBy', 'name email')
+//       .sort({ createdAt: -1 })
+//       .skip(skip)
+//       .limit(limit);
+    
+//     const total = await Document.countDocuments(query);
+    
+//     res.json({
+//       documents,
+//       currentPage: page,
+//       totalPages: Math.ceil(total / limit),
+//       totalDocuments: total
+//     });
+//   } catch (error) {
+//     console.error('Get documents error:', error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
+
+
 const getDocuments = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -58,14 +104,12 @@ const getDocuments = async (req, res) => {
       query.tags = { $in: [req.query.tag] };
     }
     
-    // Filter by search term if provided - FIXED
+    // Filter by search term if provided
     if (req.query.search) {
-      const searchRegex = { $regex: req.query.search, $options: 'i' }; // Use string directly
-      
       query.$or = [
-        { title: searchRegex },
-        { content: searchRegex },
-        { tags: { $in: [req.query.search] } } // For tags, use $in with string
+        { title: { $regex: req.query.search, $options: 'i' } },
+        { content: { $regex: req.query.search, $options: 'i' } },
+        { tags: { $in: [new RegExp(req.query.search, 'i')] } }
       ];
     }
     
@@ -85,7 +129,10 @@ const getDocuments = async (req, res) => {
     });
   } catch (error) {
     console.error('Get documents error:', error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ 
+      message: 'Failed to load documents',
+      error: process.env.NODE_ENV === 'production' ? {} : error.message 
+    });
   }
 };
 

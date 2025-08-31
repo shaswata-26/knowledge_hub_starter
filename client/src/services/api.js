@@ -1,25 +1,27 @@
 import axios from 'axios';
 
-const API_BASE_URL = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://knowledge-hub-starter.onrender.com/api',
-});
+// CORRECT: API_BASE_URL should be a string, not an axios instance
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://knowledge-hub-starter.onrender.com/api';
+
 const API = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL, // Now this is correct
   timeout: 15000, // 15 second timeout
 });
 
-// Add better error handling
-API.interceptors.request.use(
-  (config) => {
-    console.log('API Request:', config.method?.toUpperCase(), config.url);
-    return config;
-  },
-  (error) => {
-    console.error('Request error:', error);
-    return Promise.reject(error);
+// Add auth token to requests - This should be FIRST interceptor
+API.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-);
+  console.log('API Request:', config.method?.toUpperCase(), config.url);
+  return config;
+}, (error) => {
+  console.error('Request error:', error);
+  return Promise.reject(error);
+});
 
+// Response interceptor
 API.interceptors.response.use(
   (response) => {
     console.log('API Response:', response.status);
@@ -37,20 +39,15 @@ API.interceptors.response.use(
       throw new Error('Cannot connect to server. Please check your connection.');
     } else if (error.response?.status === 0) {
       throw new Error('Network error. Please try again.');
+    } else if (error.response?.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
     
     return Promise.reject(error);
   }
 );
-
-// Add auth token to requests
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 // Documents API
 export const fetchDocuments = (page = 1, limit = 10, search = '', tag = '') => {
@@ -109,3 +106,5 @@ export const register = (userData) => {
 export const getProfile = () => {
   return API.get('/auth/profile');
 };
+
+export default API;
