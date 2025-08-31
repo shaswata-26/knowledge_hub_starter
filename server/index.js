@@ -26,9 +26,8 @@ const corsOptions = {
     
     const allowedOrigins = [
       'http://localhost:5173',
-      'https://knowledge-hub-starter.onrender.com',
-      'https://knowledge-hub-frontend.onrender.com',
-      'https://your-frontend-url.onrender.com' // Your actual frontend URL
+      'https://knowledge-hub-starter-frontend.onrender.com'
+      
     ];
     
     // Allow any Render.com subdomain and localhost
