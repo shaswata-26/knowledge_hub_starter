@@ -1,8 +1,48 @@
 import axios from 'axios';
 
-const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+const API_BASE_URL = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || 'https://knowledge-hub-starter.onrender.com/api',
 });
+const API = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 15000, // 15 second timeout
+});
+
+// Add better error handling
+API.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', config.method?.toUpperCase(), config.url);
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+API.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', response.status);
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      url: error.config?.url
+    });
+    
+    if (error.code === 'ECONNREFUSED') {
+      throw new Error('Cannot connect to server. Please check your connection.');
+    } else if (error.response?.status === 0) {
+      throw new Error('Network error. Please try again.');
+    }
+    
+    return Promise.reject(error);
+  }
+);
+
 // Add auth token to requests
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
