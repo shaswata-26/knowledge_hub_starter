@@ -12,36 +12,36 @@ connectDB();
 const app = express();
 
 // // Middleware
-app.use(cors({
-  origin: true, // Your Vite frontend URL
-  credentials: true
-}));
+// app.use(cors({
+//   origin: true, // Your Vite frontend URL
+//   credentials: true
+// }));
 
 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps, curl requests)
-//     if (!origin) return callback(null, true);
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
     
-//     const allowedOrigins = [
-//       'http://localhost:5173',
-//       'https://knowledge-hub-starter.onrender.com',
-//       'https://knowledge-hub-frontend.onrender.com',
-//       'https://knowledge-hub-starter.onrender.com' // Your frontend URL
-//     ];
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://knowledge-hub-starter.onrender.com',
+      'https://knowledge-hub-frontend.onrender.com',
+      'https://knowledge-hub-starter.onrender.com' // Your frontend URL
+    ];
     
-//     if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('render.com')) {
-//       callback(null, true);
-//     } else {
-//       console.log('Blocked by CORS:', origin);
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true,
-//   optionsSuccessStatus: 200
-// };
+    if (allowedOrigins.indexOf(origin) !== -1 || origin.includes('render.com')) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
 app.use((err, req, res, next) => {
   if (err.message === 'Not allowed by CORS') {
