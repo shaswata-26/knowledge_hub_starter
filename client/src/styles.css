@@ -1,0 +1,4 @@
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial; background:#f8fafc; color:#0f172a}
+.card{background:white;border-radius:12px;padding:16px;box-shadow:0 4px 14px rgba(2,6,23,0.06)}
+.btn{display:inline-block;padding:8px 12px;border-radius:10px;background:#0f172a;color:white;text-decoration:none}
+.input{width:100%;padding:10px;border-radius:8px;border:1px solid #e6edf3}
