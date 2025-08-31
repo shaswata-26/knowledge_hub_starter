@@ -17,85 +17,80 @@ const app = express();
 //   credentials: true
 // }));
 
-
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl requests, Postman)
+    // Allow requests with no origin (server-to-server, curl, health checks)
     if (!origin) return callback(null, true);
+    
+    console.log('🌐 Origin requesting access:', origin);
     
     // List of allowed origins
     const allowedOrigins = [
       'http://localhost:5173',
       'https://knowledge-hub-starter-frontend.onrender.com',
-      'https://knowledge-hub-starter.onrender.com', 
-      'https://knowledge-hub-backend.onrender.com',
-      /\.render\.com$/ // Allow any render.com subdomain
+      'https://knowledge-hub-starter.onrender.com',
+      'https://knowledge-hub-backend.onrender.com'
     ];
     
     // Check if origin is allowed
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      if (typeof allowedOrigin === 'string') {
-        return origin === allowedOrigin;
-      } else if (allowedOrigin instanceof RegExp) {
-        return allowedOrigin.test(origin);
-      }
-      return false;
-    });
+    const isAllowed = allowedOrigins.some(allowedOrigin => 
+      origin === allowedOrigin || origin.endsWith('.render.com')
+    );
     
     if (isAllowed) {
+      console.log('✅ Allowed origin:', origin);
       callback(null, true);
     } else {
       console.log('🚫 Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS. Allowed origins: ${allowedOrigins.join(', ')}`));
     }
   },
   credentials: true,
   optionsSuccessStatus: 200,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
 };
 
 // Apply CORS middleware
 app.use(cors(corsOptions));
 
-// Explicitly handle OPTIONS preflight requests for all routes
+// Handle preflight requests explicitly
 app.options('*', cors(corsOptions));
 
-// Add special handling for preflight requests
+// Add debug middleware to see all requests
 app.use((req, res, next) => {
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Origin', req.headers.origin);
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.header('Access-Control-Allow-Credentials', 'true');
-    return res.status(200).end();
-  }
+  console.log('📨 Request:', {
+    method: req.method,
+    url: req.url,
+    origin: req.headers.origin || 'no-origin',
+    headers: req.headers
+  });
   next();
 });
 
-// Error handling for CORS
-
+// Handle CORS errors gracefully
 app.use((err, req, res, next) => {
-  if (err.message === 'Not allowed by CORS') {
-    res.status(403).json({ error: 'CORS policy violation' });
-  } else {
-    next(err);
+  if (err.message.includes('CORS')) {
+    console.log('🛑 CORS Error:', err.message);
+    return res.status(403).json({
+      error: 'CORS policy violation',
+      message: err.message,
+      allowedOrigins: [
+        'http://localhost:5173',
+        'https://knowledge-hub-starter-frontend.onrender.com',
+        'https://knowledge-hub-starter.onrender.com',
+        '*.render.com'
+      ]
+    });
   }
+  next(err);
 });
+
 app.use(express.json());
 
 
 
-// Debug middleware - add this before your routes
-app.use((req, res, next) => {
-  console.log('📨 Incoming request:', {
-    method: req.method,
-    url: req.url,
-    origin: req.headers.origin,
-    'user-agent': req.headers['user-agent']
-  });
-  next();
-});
+
 app.get('/health', (req, res) => {
   res.status(200).json({ 
     status: 'OK', 
