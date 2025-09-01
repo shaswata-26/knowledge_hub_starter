@@ -25,7 +25,14 @@ app.options("*", cors());
 
 // JSON body parser
 app.use(express.json());
-app.get("/favicon.ico", (req, res) => res.status(204).end());
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "API is working!",
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  });
+});
 
 
 // Health check
