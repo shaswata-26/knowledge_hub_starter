@@ -14,7 +14,7 @@ const app = express();
 
 // --- CORS Setup ---
 app.use(cors({
-  origin: "https://knowledge-hub-starter-frontend.onrender.com",
+  origin: process.env.CORS_ORIGIN || "http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
