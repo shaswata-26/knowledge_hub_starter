@@ -13,13 +13,15 @@ connectDB();
 const app = express();
 
 // --- CORS Setup ---
+const allowedOrigins = [
+  "https://knowledge-hub-starter-frontend.onrender.com",
+  "https://68b565b164b16729899fe476--knowledgehubmern.netlify.app"
+];
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || "https://knowledgehubmern.netlify.app/",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: allowedOrigins,
   credentials: true
 }));
-
 // Handle preflight requests explicitly (optional but good for logging)
 app.options("*", cors());
 
