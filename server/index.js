@@ -25,6 +25,8 @@ app.options("*", cors());
 
 // JSON body parser
 app.use(express.json());
+app.get("/favicon.ico", (req, res) => res.status(204).end());
+
 
 // Health check
 app.get("/health", (req, res) => {
