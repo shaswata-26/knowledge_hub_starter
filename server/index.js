@@ -13,14 +13,21 @@ connectDB();
 const app = express();
 
 // --- CORS Setup ---
-const allowedOrigins = [
-  "https://knowledge-hub-starter-frontend.onrender.com",
-  "https://68b565b164b16729899fe476--knowledgehubmern.netlify.app"
-];
+// const allowedOrigins = [
+//   "https://knowledge-hub-starter-frontend.onrender.com",
+//   "https://68b565b164b16729899fe476--knowledgehubmern.netlify.app"
+// ];
+
+// app.use(cors({
+//   origin: allowedOrigins,
+//   credentials: true
+// }));
 
 app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
+  origin: process.env.CORS_ORIGIN || "*", // Allow all origins if CORS_ORIGIN is not set
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true, // Allow cookies and credentials
 }));
 // Handle preflight requests explicitly (optional but good for logging)
 app.options("*", cors());
